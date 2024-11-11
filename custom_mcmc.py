@@ -38,9 +38,11 @@ class MCMC:
 
         chain = [prior]
         prob = [post_func(prior)]
+        print(prob)
     
         for i in tqdm.tqdm(range(iterations)):
             param_test = propos_func(chain[-1])
+            print(param_test)
             prob_test = post_func(param_test)
             
             acceptance = prob_test / prob[-1]
