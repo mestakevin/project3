@@ -1,0 +1,26 @@
+
+[project]
+name = "RadialDist"
+version = "1.0.1"
+dependencies = [
+   "numpy",
+   "scipy",
+   "tqdm"
+]
+authors = [
+  { name="Kevin Mesta", email="kmmesta@syr.edu" },
+  { name="Sara Talebi", email="stalebi@syr.edu" },
+]
+description = "MCMC Simulation for 3s orbital"
+
+readme = "README.txt"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.scripts]
+
+main_script = "RadialDist:mainprogram"
