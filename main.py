@@ -24,7 +24,7 @@ def main():
     sampler = MCMC(posterior,proposal,500)
     initial = [1,1,1]
     
-    sampler.run_mcmc(initial,100000)
+    sampler.run_mcmc(initial,1000000)
     #print(sampler.getChainParameter(1))
    
     plt.figure()
