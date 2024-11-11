@@ -20,7 +20,7 @@ def radial_prob_func(param):
     return (radial_func(param) ** 2 )* r **2
 
 def proposal(param):
-    new_r = param[0] + random.gauss(0, a0)
+    new_r = param[0] + a0 * random.gauss(0, 2)
     return [new_r]
         
     
@@ -40,7 +40,7 @@ def main():
 
     plt.figure()
     plt.title("Posterior samples")
-    _ = plt.hist(sampler.getChainParameter(1)[100::100], bins=100)
+    plt.hist(sampler.getChainParameter(1),bins=100, density=True, alpha=0.7, color='b')
     plt.show()
 
 main()

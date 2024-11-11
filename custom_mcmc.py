@@ -38,17 +38,20 @@ class MCMC:
 
         chain = [prior]
         prob = [post_func(prior)]
-        print(prob)
+        #print(prob)
     
         for i in tqdm.tqdm(range(iterations)):
             param_test = propos_func(chain[-1])
-            print(param_test)
+
+            if param_test[0] < 0 :
+                continue
+            #print(param_test)
             prob_test = post_func(param_test)
             
             acceptance = prob_test / prob[-1]
             u = np.random.uniform(0,1)
             
-            if u <= acceptance:
+            if acceptance > 1 or u <= acceptance:
                 chain.append(param_test)
                 prob.append(prob_test)
 
