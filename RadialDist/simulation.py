@@ -11,7 +11,7 @@ a0 = 5.29e-11  # Bohr radius in meters
 
 def radial_func(param):
     r = param[0]
-    normalization = 1 / (81 * np.sqrt(3 * a0**3))
+    normalization = 1 / (81 * np.sqrt(3 * (np.pi) * a0**3))
     return normalization * (27 - 18 * (r / a0) + 2 * (r / a0)**2) * np.exp(-r / (3 * a0))
 
 
