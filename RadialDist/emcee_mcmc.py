@@ -53,5 +53,13 @@ def main():
     plt.legend()
     plt.show()
 
+    # Autocorrelation time and effective sample size
+    try:
+        tau = sampler.get_autocorr_time()
+        print("Autocorrelation time:", tau)
+        print("Effective sample size:", len(samples) / tau)
+    except emcee.autocorr.AutocorrError:
+        print("Warning: Autocorrelation time could not be estimated reliably.")
+
 ##-----------------------------------------------------------##
 main()
