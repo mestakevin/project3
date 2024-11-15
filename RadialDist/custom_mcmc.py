@@ -1,5 +1,6 @@
 import numpy as np
 import tqdm
+import random
 
 
 class MCMC:
@@ -30,33 +31,37 @@ class MCMC:
             param_chain.append(i[param_num - 1])
         return param_chain
     
-    def run_mcmc(self, prior, iterations):
-
+    def run_mcmc(self, iterations):
+        a0 = 5.29e-11 
         post_func = self.getPosterior()
         propos_func = self.getProposal()
+        num_walkers = self.getNumWalkers()
+        #print(num_walkers)
         
 
-        chain = [prior]
-        prob = [post_func(prior)]
-        #print(prob)
-    
-        for i in tqdm.tqdm(range(iterations)):
-            param_test = propos_func(chain[-1])
+        walker_list = [[random.uniform(0, 10 * a0)] for _ in range(num_walkers)]
+        samples = [[] for _ in range(num_walkers)]
 
-            if param_test[0] < 0 :
-                continue
-            #print(param_test)
-            prob_test = post_func(param_test)
-            
-            acceptance = prob_test / prob[-1]
-            u = np.random.uniform(0,1)
-            
-            if acceptance > 1 or u <= acceptance:
-                chain.append(param_test)
-                prob.append(prob_test)
+        for i_num in tqdm.tqdm(range(iterations)):
+            for walk_num in range(num_walkers):
+                current_position = walker_list[walk_num][-1]
+                #print(current_position, type(current_position))
+                test_position = propos_func(current_position)
 
-        self.chain = chain
-        self.prob = prob
+                prob_current = post_func(current_position)
+                prob_test = post_func(test_position)
+            
+                acceptance = np.exp(prob_test - prob_current)
+            
+                u = np.random.uniform(0,1)
+            
+                if acceptance >= 1 or u < acceptance:
+                    walker_list[walk_num].append(test_position)
+                samples[walk_num].append(walker_list[walk_num][-1])
+                    
+
+        self.chain = samples
+        
 
 
 

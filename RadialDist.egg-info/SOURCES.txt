@@ -2,6 +2,7 @@ README.txt
 pyproject.toml
 RadialDist/__init__.py
 RadialDist/custom_mcmc.py
+RadialDist/emcee_mcmc.py
 RadialDist/simulation.py
 RadialDist.egg-info/PKG-INFO
 RadialDist.egg-info/SOURCES.txt
