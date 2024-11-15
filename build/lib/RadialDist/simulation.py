@@ -5,7 +5,7 @@ import random
 from matplotlib import pyplot as plt
 from .custom_mcmc import MCMC
 
-#numpy.random.seed(12345)
+numpy.random.seed(12345)
 a0 = 5.29e-11  # Bohr radius in meters
 
 
@@ -27,7 +27,25 @@ def log_prob(r):
     if r < 0:
         return -np.inf
     return np.log(radial_prob_func(r) + 1e-100)
+
+
+def convergenceCheck(chains):
+
+    m, n = chains.shape  
     
+    chain_means = np.mean(chains, axis=1)
+    overall_mean = np.mean(chain_means)
+    
+    
+    B = n * np.var(chain_means, ddof=1)
+    W = np.mean([np.var(chain, ddof=1) for chain in chains])
+    
+    var_hat = (1 - 1 / n) * W + B / n
+    
+    R_hat = np.sqrt(var_hat / W)
+    
+    return R_hat
+
 def main():
 
     nwalkers = 5
@@ -39,6 +57,10 @@ def main():
     #print(sampler.getChainParameter(1))
    
     samples = sampler.getChain()
+    samples_array = np.array(samples)
+
+    R_hat = convergenceCheck(samples_array)
+    print("Gelman-Rubin R-hat:", R_hat)
 
     all_samples = np.hstack(samples)
 
