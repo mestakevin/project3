@@ -22,7 +22,7 @@ def log_prob(r):
         return -np.inf
     return np.log(radial_prob_func(r[0]) + 1e-100)
 ##----------------------------------------------##
-def main():
+def run_emcee():
     # Set up MCMC parameters
     ndim = 1
     nwalkers = 50
@@ -52,17 +52,13 @@ def main():
     bin_centers = 0.5 * (bins[1:] + bins[:-1])
     bin_width = bins[1] - bins[0]
 
-    # Overlay theoretical distribution
+    # Overlay theoretical distribution for reference
     r_values = np.linspace(0, 30 * a0, 1000)
     theoretical_distribution = np.array([radial_prob_func(r) for r in r_values])
-
-    # Ensure that `bin_width` is defined explicitly as a float
-    bin_width = float(bin_width)
-
-    # Normalize the theoretical distribution
+    bin_width = (r_values[1] - r_values[0])
     theoretical_distribution /= np.sum(theoretical_distribution * bin_width)
-
     plt.plot(r_values, theoretical_distribution, 'r-', label="Theoretical 3s radial distribution")
+
     plt.xlabel("Radial distance r (m)")
     plt.ylabel("Probability density")
     plt.legend()
@@ -79,4 +75,4 @@ def main():
     except emcee.autocorr.AutocorrError:
         print("Warning: Autocorrelation time could not be estimated reliably.")
 ##----------------------------------------------##
-main()
+run_emcee()
