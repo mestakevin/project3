@@ -12,9 +12,10 @@ def radial_func(r):
     return (normalization * (27 - (18 * (r / a0)) + (2 * (r / a0)**2))) * np.exp(-r / (3 * a0))
 ##----------------------------------------------##
 def radial_prob_func(r):
+    a0 = 5.29e-11  # Bohr radius in meters
     # Make sure r is treated as a scalar
     r = r[0] if isinstance(r, list) else r
-    value = ((radial_func(r) ** 2) * r ** 2)
+    value = ((radial_func(r) ** 2) * r ** 2) /a0**2
     return value
 ##----------------------------------------------##
 def log_prob(r):
@@ -28,7 +29,7 @@ def run_emcee():
     nwalkers = 50
     nsteps = 10000
 
-    initial_positions = np.array([5 * a0 + 1e-10 * np.random.randn(ndim) for i in range(nwalkers)])
+    initial_positions = np.array([ 1e2 * a0 + 1e-10 * np.random.randn(ndim) for i in range(nwalkers)])
 
     # Run emcee sampler
     sampler = emcee.EnsembleSampler(nwalkers, ndim, log_prob)
