@@ -67,18 +67,49 @@ def getavgAutoCorrelation(samples_array):
         acl = autocorrelation_length(walker_samples)
         autocorr_lengths.append(acl)
     mean_autocorr_length = np.mean(autocorr_lengths)
-    print("Autocorrelation Lengths per Walker:", autocorr_lengths)
-    print("Mean Autocorrelation Length:", mean_autocorr_length)
+    
+    return mean_autocorr_length
 
 
 def auto_corr_vs_step_size():
-    return None
+    step_size_range = [1.0,1.25,1.5,1.75,2.0,2.25,2.5,2.75,3.0,3.25,3.5,3.75,4.0,4.25,4.5,4.75,5.0]
+    avgautocorr_list = []
+    rhat_list =[]
+    for i in step_size_range:
+        nwalkers = 50
+        nsteps = 100000
+        step_size = i
+        pos_range = [0.0e-10,1.5e-10]
+        sampler = MCMC(log_prob,proposal,nwalkers)
+    
+        sampler.run_mcmc(step_size,nsteps,pos_range)
+    #   print(sampler.getChainParameter(1))
+   
+        samples = sampler.getChain()
+        samples_array = np.array(samples)
+
+        R_hat = convergenceCheck(samples_array)
+        rhat_list.append(R_hat)
+        avgautocorr_list.append(getavgAutoCorrelation(samples_array))
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(step_size_range,avgautocorr_list)
+    plt.xlabel("Step Size")
+    plt.ylabel("Average Autocorrelation Length")
+    plt.title("Average Autocorrelation Length vs Step Size")
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(step_size_range,rhat_list)
+    plt.xlabel("Step Size")
+    plt.ylabel("Convergence Statistic")
+    plt.title("Convergence Statistic vs Step Size")    
+    plt.show()
 
 def main():
 
     nwalkers = 5
     nsteps = 100000
-    step_size = 1
+    step_size = 2
     pos_range = [0.0e-10,1.5e-10]
     sampler = MCMC(log_prob,proposal,nwalkers)
     
