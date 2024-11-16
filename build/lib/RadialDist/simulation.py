@@ -4,6 +4,7 @@ import numpy.random
 import random
 from matplotlib import pyplot as plt
 from .custom_mcmc import MCMC
+from .emcee_mcmc import run_emcee_param
 
 a0 = 5.29e-11  # Bohr radius in meters
 
@@ -30,23 +31,38 @@ def log_prob(r):
 
 
 def convergenceCheck(chains):
-
     m, n = chains.shape  
     #print("m:",m,"n:",n)
     chain_means = np.mean(chains, axis=1)
     overall_mean = np.mean(chain_means)
-
     B = n / (m-1) * (np.sum(np.square(chain_means - overall_mean)))
-
     W = 0
     for i in range(m):
         s_square = 1 / (n - 1) * np.sum(np.square(chains[i] - chain_means[i]))
         W += s_square 
-
     W = 1 / m * W
-
     R_hat = ((1 - 1 / n) * W + B / n) / W
     #print("Test Rhat:",R_hat)
+    return R_hat
+
+def convergenceCheck_emcee(chains):
+    m, n, ndim = chains.shape  
+    
+    nsteps, nwalkers, ndim = chains.shape
+    #print(nsteps, nwalkers, ndim)
+    chain_means = np.mean(chains, axis=0)
+
+    
+    overall_mean = np.mean(chain_means, axis=0)
+
+    B = nsteps * np.sum(np.square(chain_means - overall_mean), axis=0) / (nwalkers - 1)
+
+    W = np.sum(np.var(chains, axis=0, ddof=1), axis=0) / nwalkers
+
+    var_hat = ((nsteps - 1) / nsteps) * W + (B / nsteps)
+
+    R_hat = np.sqrt(var_hat / W)
+
     return R_hat
 
 def autocorrelation(chain, max_lag=None):
@@ -73,6 +89,60 @@ def getavgAutoCorrelation(samples_array):
     mean_autocorr_length = np.mean(autocorr_lengths)
     
     return mean_autocorr_length
+
+def optimal_burnin():
+    burn_in_list = [0,0.025,0.05,0.075,0.1,0.125,0.15,0.175,0.2]
+
+
+    nwalkers = 20
+    nsteps = 100000
+    step_size = 5
+    pos_range = [200.0e-10,250e-10]
+
+
+    sampler = MCMC(log_prob,proposal,nwalkers)
+    sampler.run_mcmc(step_size,nsteps,pos_range)
+
+    R_hat_list = []
+    autocorr_list = []
+
+    for burnnum in burn_in_list:
+        sampler_copy = sampler
+        sampler_copy.discard(burnnum)
+        burned_samples_array = np.array(sampler_copy.getChain())
+
+        R_hat = convergenceCheck(burned_samples_array)
+        R_hat_list.append(R_hat)
+
+        autcorr_length = getavgAutoCorrelation(burned_samples_array)
+        autocorr_list.append(autcorr_length)
+
+        all_samples = np.hstack(burned_samples_array)
+
+        plt.figure(figsize=(8, 5))
+        plt.hist(all_samples, bins=100, density=True, alpha=0.7, color='b', label="MCMC Samples")
+        plt.xlabel("Radius (meters)")
+        plt.ylabel("Probability Density")
+        plt.legend()
+        plt.title("Radial Probability Distribution of 3s Orbital (Hydrogen)")
+        plt.show()
+
+    print(R_hat_list)
+    print(autocorr_list)
+    plt.figure(figsize=(10, 6))
+    plt.plot(burn_in_list,R_hat_list)
+    plt.xlabel("Assumed Burn-in Period ")
+    plt.ylabel("Convergence Statistic")
+    plt.title("Convergence Statistic vs Assumed Burn-in Period")
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(burn_in_list,autocorr_list)
+    plt.xlabel("Assumed Burn-in Period ")
+    plt.ylabel("Average Autocorrelation Length")
+    plt.title("Average Autocorrelation Length vs Assumed Burn-in Period")    
+    plt.show()
+
+        
 
 
 def auto_corr_vs_step_size():
@@ -109,34 +179,70 @@ def auto_corr_vs_step_size():
     plt.title("Convergence Statistic vs Step Size")    
     plt.show()
 
-
-def main_program():
-
-    nwalkers = 50
+def emcee_vs_custom():
+    nwalkers = 5
     nsteps = 100000
     step_size = 5
     pos_range = [0.0e-10,1.5e-10]
+
+    emcee_samples = run_emcee_param(nwalkers, nsteps,pos_range[0],pos_range[1])
+    
+
+    R_hat_emcee = convergenceCheck_emcee(emcee_samples)
+
+    sampler = MCMC(log_prob,proposal,nwalkers)
+    
+    sampler.run_mcmc(step_size,nsteps,pos_range)
+    custom_samples = sampler.getChain()
+
+    cutsom_samples_array = np.array(custom_samples)
+
+    R_hat_custom = convergenceCheck(cutsom_samples_array)
+
+
+    print("R_hat custom:",R_hat_custom,"\t R_hat emcee:",R_hat_emcee)
+
+
+
+
+
+def main_program():
+
+    nwalkers = 5
+    nsteps = 100000
+    step_size = 5
+    #pos_range = [0.0e-10,1.5e-10]
+    pos_range = [200.0e-10,250e-10]
     sampler = MCMC(log_prob,proposal,nwalkers)
     
     sampler.run_mcmc(step_size,nsteps,pos_range)
     #print(sampler.getChainParameter(1))
-   
+    sampler.discard(0.2)
     samples = sampler.getChain()
-    samples_array = np.array(samples)
+    
+    all_samples_array = np.array(samples)
 
-    R_hat = convergenceCheck(samples_array)
+    #sampler.discard(0.2)
+
+    burned_samples_array = np.array(sampler.getChain())
+   
+
+    #print(len(all_samples_array), len(burned_samples_array))
+
+
+    R_hat = convergenceCheck(all_samples_array)
     print("Gelman-Rubin R-hat:", R_hat)
 
 
-    autcorr_length = getavgAutoCorrelation(samples_array)
+    autcorr_length = getavgAutoCorrelation(all_samples_array)
     print("The average autocorrelation length for",nwalkers,"walkers,",nsteps,"iterations, with a step size of",step_size,"is: ",autcorr_length)
     all_samples = np.hstack(samples)
 
     plt.figure(figsize=(10, 6))
     for i, walker_samples in enumerate(samples):
-        plt.plot(range(nsteps), walker_samples, alpha=0.6, label=f'Walker {i+1}' if i < 10 else "")
+        plt.plot(range(int(nsteps*0.8)), walker_samples, alpha=0.6, label=f'Walker {i+1}' if i < 10 else "")
     plt.xlabel("Step")
-    #plt.xlim(0,1000)
+    plt.xlim(0,1000)
     plt.ylabel("Position (meters)")
     plt.title("Trajectory of Each Walker Over MCMC Steps")
     plt.legend(loc="upper right", ncol=2, fontsize=8)

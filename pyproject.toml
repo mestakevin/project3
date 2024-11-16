@@ -1,7 +1,7 @@
 
 [project]
 name = "RadialDist"
-version = "1.6.0"
+version = "1.7.7"
 dependencies = [
    "numpy",
    "scipy",
@@ -27,3 +27,5 @@ classifiers = [
 main_script = "RadialDist:mainprogram"
 emcee_script = "RadialDist:emcee_program"
 autocorr_step = "RadialDist:autocorr_vs_stepsize"
+converge_test = "RadialDist:convergence_test_emcee_custom"
+burn_in = "RadialDist:burn_in_periods"

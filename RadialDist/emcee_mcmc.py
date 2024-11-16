@@ -1,6 +1,7 @@
 import numpy as np
 import emcee
 import matplotlib.pyplot as plt
+import random
 
 # Constants
 
@@ -76,3 +77,19 @@ def run_emcee():
     except emcee.autocorr.AutocorrError:
         print("Warning: Autocorrelation time could not be estimated reliably.")
 ##----------------------------------------------##
+
+
+def run_emcee_param(nwalkers, nsteps,lower,upper):
+    # Set up MCMC parameters
+    ndim = 1
+
+    initial_positions = np.array([ [random.uniform(lower, upper)] for _ in range(nwalkers)])
+
+    # Run emcee sampler
+    sampler = emcee.EnsembleSampler(nwalkers, ndim, log_prob)
+    sampler.run_mcmc(initial_positions, nsteps, progress=True)
+    samples = sampler.get_chain(discard=int(nsteps * 0.2), flat=False)
+
+    #print(samples)
+    
+    return samples

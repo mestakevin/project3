@@ -1,4 +1,6 @@
 [console_scripts]
 autocorr_step = RadialDist:autocorr_vs_stepsize
+burn_in = RadialDist:burn_in_periods
+converge_test = RadialDist:convergence_test_emcee_custom
 emcee_script = RadialDist:emcee_program
 main_script = RadialDist:mainprogram

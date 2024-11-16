@@ -10,3 +10,11 @@ def autocorr_vs_stepsize():
 def emcee_program():
     from .emcee_mcmc import run_emcee
     run_emcee()
+
+def convergence_test_emcee_custom():
+    from .simulation import emcee_vs_custom
+    emcee_vs_custom()
+
+def burn_in_periods():
+    from .simulation import optimal_burnin
+    optimal_burnin()

@@ -65,6 +65,13 @@ class MCMC:
         self.chain = samples
         
 
+    def discard(self,percent):
+        burn_in_length = int(len(self.getChain()[0]) * percent)
+
+        self.chain = [walker[burn_in_length: ] for walker in self.getChain()]
+
+        
+
 
 
 
