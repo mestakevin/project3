@@ -5,7 +5,6 @@ import random
 from matplotlib import pyplot as plt
 from .custom_mcmc import MCMC
 
-#numpy.random.seed(12345)
 a0 = 5.29e-11  # Bohr radius in meters
 
 
@@ -33,16 +32,21 @@ def log_prob(r):
 def convergenceCheck(chains):
 
     m, n = chains.shape  
+    #print("m:",m,"n:",n)
     chain_means = np.mean(chains, axis=1)
     overall_mean = np.mean(chain_means)
-    
-    B = n * np.var(chain_means, ddof=1)
-    W = np.mean([np.var(chain, ddof=1) for chain in chains])
-    
-    var_hat = (1 - 1 / n) * W + B / n
-    
-    R_hat = np.sqrt(var_hat / W)
-    
+
+    B = n / (m-1) * (np.sum(np.square(chain_means - overall_mean)))
+
+    W = 0
+    for i in range(m):
+        s_square = 1 / (n - 1) * np.sum(np.square(chains[i] - chain_means[i]))
+        W += s_square 
+
+    W = 1 / m * W
+
+    R_hat = ((1 - 1 / n) * W + B / n) / W
+    #print("Test Rhat:",R_hat)
     return R_hat
 
 def autocorrelation(chain, max_lag=None):
@@ -105,11 +109,12 @@ def auto_corr_vs_step_size():
     plt.title("Convergence Statistic vs Step Size")    
     plt.show()
 
-def main():
 
-    nwalkers = 5
+def main_program():
+
+    nwalkers = 50
     nsteps = 100000
-    step_size = 2
+    step_size = 5
     pos_range = [0.0e-10,1.5e-10]
     sampler = MCMC(log_prob,proposal,nwalkers)
     
@@ -123,8 +128,8 @@ def main():
     print("Gelman-Rubin R-hat:", R_hat)
 
 
-    getavgAutoCorrelation(samples_array)
-
+    autcorr_length = getavgAutoCorrelation(samples_array)
+    print("The average autocorrelation length for",nwalkers,"walkers,",nsteps,"iterations, with a step size of",step_size,"is: ",autcorr_length)
     all_samples = np.hstack(samples)
 
     plt.figure(figsize=(10, 6))
@@ -135,9 +140,7 @@ def main():
     plt.ylabel("Position (meters)")
     plt.title("Trajectory of Each Walker Over MCMC Steps")
     plt.legend(loc="upper right", ncol=2, fontsize=8)
-    plt.show()
 
-    
     plt.figure(figsize=(8, 5))
     plt.hist(all_samples, bins=100, density=True, alpha=0.7, color='b', label="MCMC Samples")
     plt.xlabel("Radius (meters)")

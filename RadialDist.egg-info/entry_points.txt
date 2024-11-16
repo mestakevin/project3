@@ -1,3 +1,4 @@
 [console_scripts]
 autocorr_step = RadialDist:autocorr_vs_stepsize
+emcee_script = RadialDist:emcee_program
 main_script = RadialDist:mainprogram

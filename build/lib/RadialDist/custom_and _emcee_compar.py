@@ -46,8 +46,8 @@ def main():
 
     # Plot histograms
     plt.figure()
-    plt.hist(custom_samples, bins=100, density=True, alpha=0.5, label="Custom MCMC", color='b')
-    plt.hist(emcee_samples, bins=100, density=True, alpha=0.5, label="emcee MCMC", color='g')
+    plt.hist(custom_samples, bins=100, density=True, alpha=0.7, label="Custom MCMC", color='b')
+    plt.hist(emcee_samples, bins=100, density=True, alpha=0.5, label="emcee MCMC", color='orange')
 
     # Overlay theoretical distribution for reference
     r_values = np.linspace(0, 30 * a0, 1000)

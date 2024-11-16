@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: RadialDist
-Version: 1.3.9
+Version: 1.6.0
 Summary: MCMC Simulation for 3s orbital
 Author-email: Kevin Mesta <kmmesta@syr.edu>, Sara Talebi <stalebi@syr.edu>
 Classifier: Programming Language :: Python :: 3

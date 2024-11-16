@@ -1,7 +1,7 @@
 
 [project]
 name = "RadialDist"
-version = "1.3.9"
+version = "1.6.0"
 dependencies = [
    "numpy",
    "scipy",
@@ -25,4 +25,5 @@ classifiers = [
 [project.scripts]
 
 main_script = "RadialDist:mainprogram"
+emcee_script = "RadialDist:emcee_program"
 autocorr_step = "RadialDist:autocorr_vs_stepsize"

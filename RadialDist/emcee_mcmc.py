@@ -3,7 +3,7 @@ import emcee
 import matplotlib.pyplot as plt
 
 # Constants
-np.random.seed(12345)
+
 a0 = 5.29e-11  # Bohr radius in meters
 
 ##----------------------------------------------##
@@ -27,7 +27,7 @@ def run_emcee():
     # Set up MCMC parameters
     ndim = 1
     nwalkers = 50
-    nsteps = 10000
+    nsteps = 100000
 
     initial_positions = np.array([ 1e2 * a0 + 1e-10 * np.random.randn(ndim) for i in range(nwalkers)])
 
@@ -76,4 +76,3 @@ def run_emcee():
     except emcee.autocorr.AutocorrError:
         print("Warning: Autocorrelation time could not be estimated reliably.")
 ##----------------------------------------------##
-run_emcee()
