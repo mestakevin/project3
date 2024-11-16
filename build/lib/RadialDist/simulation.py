@@ -94,7 +94,7 @@ def optimal_burnin():
     burn_in_list = [0,0.025,0.05,0.075,0.1,0.125,0.15,0.175,0.2]
 
 
-    nwalkers = 20
+    nwalkers = 50
     nsteps = 100000
     step_size = 5
     pos_range = [200.0e-10,250e-10]
@@ -119,13 +119,6 @@ def optimal_burnin():
 
         all_samples = np.hstack(burned_samples_array)
 
-        plt.figure(figsize=(8, 5))
-        plt.hist(all_samples, bins=100, density=True, alpha=0.7, color='b', label="MCMC Samples")
-        plt.xlabel("Radius (meters)")
-        plt.ylabel("Probability Density")
-        plt.legend()
-        plt.title("Radial Probability Distribution of 3s Orbital (Hydrogen)")
-        plt.show()
 
     print(R_hat_list)
     print(autocorr_list)
@@ -180,7 +173,7 @@ def auto_corr_vs_step_size():
     plt.show()
 
 def emcee_vs_custom():
-    nwalkers = 5
+    nwalkers = 50
     nsteps = 100000
     step_size = 5
     pos_range = [0.0e-10,1.5e-10]
@@ -204,20 +197,38 @@ def emcee_vs_custom():
 
 
 
+def num_input(prompt):
+    """
+    Obtains a number from the user to be used for simulating
 
+    Parameters:
+        prompt (str): Message to be displayed to prompt user to input a number
+    Returns:
+        float: User inputted number
+    """
+    try:
+        num = float(input(prompt))
+    except ValueError:
+        num = num_input("Invalid input, please enter a number: ")
+    return num
 
 def main_program():
 
-    nwalkers = 5
-    nsteps = 100000
-    step_size = 5
+    nwalkers = int(num_input("How many walkers would you like to simulate?\n>"))
+    nsteps = int(num_input("How many iterations would you like to simulate for?\n>"))
+    step_size = num_input("What value for 'step_size' would you like to use?\n>")
     #pos_range = [0.0e-10,1.5e-10]
-    pos_range = [200.0e-10,250e-10]
+
+    #pos_range = [200.0e-10,250e-10]
+    pos_range= [num_input("What would you like to set the lower bound of inital positions to?\n>"),num_input("What would you like to set the upper bound of inital positions to?\n>")]
+    burn_in = num_input("What would you like to set the burn-in period to?\n>")
+    
     sampler = MCMC(log_prob,proposal,nwalkers)
+
     
     sampler.run_mcmc(step_size,nsteps,pos_range)
     #print(sampler.getChainParameter(1))
-    sampler.discard(0.2)
+    sampler.discard(burn_in)
     samples = sampler.getChain()
     
     all_samples_array = np.array(samples)
@@ -240,7 +251,7 @@ def main_program():
 
     plt.figure(figsize=(10, 6))
     for i, walker_samples in enumerate(samples):
-        plt.plot(range(int(nsteps*0.8)), walker_samples, alpha=0.6, label=f'Walker {i+1}' if i < 10 else "")
+        plt.plot(range(int(nsteps*(1-burn_in))), walker_samples, alpha=0.6, label=f'Walker {i+1}' if i < 10 else "")
     plt.xlabel("Step")
     plt.xlim(0,1000)
     plt.ylabel("Position (meters)")

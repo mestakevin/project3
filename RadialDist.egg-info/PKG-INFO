@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: RadialDist
-Version: 1.7.7
+Version: 1.8.0
 Summary: MCMC Simulation for 3s orbital
 Author-email: Kevin Mesta <kmmesta@syr.edu>, Sara Talebi <stalebi@syr.edu>
 Classifier: Programming Language :: Python :: 3
@@ -30,5 +30,29 @@ Following installation, the following scripts can be ran from command line:
 
 
 main_script
+emcee_script 
+autocorr_step 
+converge_test 
+burn_in 
 
 "main_script" will run the MCMC chain for 100000 iterations and displays the evolution of the walker as well as the radial probability distribution as a function of r values.
+
+############################################################################
+How many walkers would you like to simulate?
+>50
+How many iterations would you like to simulate for?
+>10000
+What value for 'step_size' would you like to use?
+>5
+What would you like to set the lower bound of inital positions to?
+>200e-10
+What would you like to set the upper bound of inital positions to?
+>250e-10
+What would you like to set the burn-in period to?
+>0
+############################################################################
+
+100%|███████████████████████████████████| 10000/10000 [00:03<00:00, 3042.16it/s]
+Gelman-Rubin R-hat: 1.415337820546066
+The average autocorrelation length for 50 walkers, 10000 iterations, with a step size of 5.0 is:  311.9732675981156
+

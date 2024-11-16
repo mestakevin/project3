@@ -40,7 +40,7 @@ class MCMC:
         upper = pos_range[1]
         #print(num_walkers)
         
-        walker_list = [[random.uniform(lower, upper)] for _ in range(num_walkers)]
+        walker_list = [[random.uniform(lower, upper)] for _ in range(int(num_walkers))]
         #walker_list = [[random.uniform(0, 10 * a0)] for _ in range(num_walkers)]
         samples = [[] for _ in range(num_walkers)]
 
