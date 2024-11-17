@@ -9,10 +9,28 @@ a0 = 5.29e-11  # Bohr radius in meters
 
 ##----------------------------------------------##
 def radial_func(r):
+    """
+    Supplemental wavefunction of the 3s orbital to be used by the radial_prob_func function
+
+    Parameters:
+        r (float): The position at which to evaulate the wavefunction at
+    
+    Returns:
+        (float): Value of the wavefunction evaluated at r
+    """
     normalization = 1 / (81 * np.sqrt(3 * np.pi * a0**3))
     return (normalization * (27 - (18 * (r / a0)) + (2 * (r / a0)**2))) * np.exp(-r / (3 * a0))
 ##----------------------------------------------##
 def radial_prob_func(r):
+    """
+    Radial probabiity density function to be used by log_prob function
+
+    Parameters:
+        r (list/float): The position at which to evaulate the radial probability density function at, is either a list with the value inside or is the value
+    
+    Returns:
+        value (float): The probability density at the given position
+    """
     a0 = 5.29e-11  # Bohr radius in meters
     # Make sure r is treated as a scalar
     r = r[0] if isinstance(r, list) else r
@@ -20,11 +38,31 @@ def radial_prob_func(r):
     return value
 ##----------------------------------------------##
 def log_prob(r):
+    """
+    The log of the posterior probability function, radial_prob_func , that returns the log of the probability at a given position, assuming that the probability at the priors is increasingly small and negligble
+
+    Parameters:
+        r (list/float): The position at which to evaulate the radial probability density function at, is either a list with the value inside or is the value
+
+    Returns:
+        (float): The log of the radial_prob_func evaulated at r 
+    """
     if r[0] < 0:
         return -np.inf
     return np.log(radial_prob_func(r[0]) + 1e-100)
 ##----------------------------------------------##
 def run_emcee():
+    """
+    Performs the emcee MCMC simulation with set parameters
+    
+    Returns:
+        None
+
+    Outputs:
+        Displays two plots, a trace plot of the first walker and another of the Radial Probability Distribution of 3s Orbital with the analytical function overlayed for comparison
+        as well as printing the average autocorrelation length
+    """
+
     # Set up MCMC parameters
     ndim = 1
     nwalkers = 50
@@ -80,6 +118,18 @@ def run_emcee():
 
 
 def run_emcee_param(nwalkers, nsteps,lower,upper):
+    """
+    Performs the emcee MCMC simulation according to the parameters given
+
+    Parameters:
+        nwalkers (int): The number of walkers to use for the simulation
+        nsteps (int): The number of iterations to evolve each walker's positions
+        lower (float): The lower bound of possible initial positions
+        upper (float): The upper bound of possible initial positions
+    
+    Returns:
+        samples (array): An array containing the array of the walker positions after discarding the intial 20% of positions, the assumed burn-in period
+    """
     # Set up MCMC parameters
     ndim = 1
 

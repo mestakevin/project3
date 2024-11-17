@@ -1,7 +1,7 @@
 
 [project]
 name = "RadialDist"
-version = "1.8.0"
+version = "2.1.3"
 dependencies = [
    "numpy",
    "scipy",
