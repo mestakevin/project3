@@ -148,10 +148,12 @@ def auto_corr_vs_step_size():
         step_size = i
         pos_range = [0.0e-10,1.5e-10]
         sampler = MCMC(log_prob,proposal,nwalkers)
-    
+        
         sampler.run_mcmc(step_size,nsteps,pos_range)
+
     #   print(sampler.getChainParameter(1))
-   
+        sampler.discard(0.2)
+        
         samples = sampler.getChain()
         samples_array = np.array(samples)
 
@@ -176,7 +178,7 @@ def emcee_vs_custom():
     nwalkers = 50
     nsteps = 100000
     step_size = 5
-    pos_range = [0.0e-10,1.5e-10]
+    pos_range = [0.0e-10,10.0e-10]
 
     emcee_samples = run_emcee_param(nwalkers, nsteps,pos_range[0],pos_range[1])
     
@@ -186,6 +188,7 @@ def emcee_vs_custom():
     sampler = MCMC(log_prob,proposal,nwalkers)
     
     sampler.run_mcmc(step_size,nsteps,pos_range)
+    sampler.discard(0.2)
     custom_samples = sampler.getChain()
 
     cutsom_samples_array = np.array(custom_samples)

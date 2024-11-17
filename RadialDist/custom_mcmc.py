@@ -6,32 +6,72 @@ import random
 class MCMC:
 
     def __init__(self, posterior, proposal,walkers):
-       
+        """
+        A class representing the custom Markov chain Monte Carlo (MCMC) simulation using the Metropolis Hastings algorithm 
+
+        Attributes:
+            posterior (function): The posterior distribution function used for the MCMC simulation
+            proposal (function): The proposal function to determine new steps within the parameter space
+            walkers (int): The number of walkers to simulate stepping through the parameter space
+            chain (array): An array containing the list of accepted positions for each walker created
+        """
         self.posterior = posterior #posterior function
         self.proposal = proposal #proposal distribution function
-        self.walkers = walkers # how many walkers
+        self.walkers = int(walkers) # how many walkers
         self.chain = 0
-        self.prob = 0
+
     
     def getNumWalkers(self):
+        """
+        Obtains the number of number of walkers in the MCMC simulation
+
+        Returns:
+            int: Number of walkers 
+        """
         return self.walkers
     
     def getPosterior(self):
+        """
+        Obtains the posterior function used in the MCMC simulation
+
+        Returns:
+            function: The posterior function used in MCMC simulation
+        """
         return self.posterior
     
     def getProposal(self):
+        """
+        Obtains the proposal function used in the MCMC simulation
+
+        Returns:
+            function: The proposal function used in MCMC simulation
+        """
         return self.proposal
     
     def getChain(self):
+        """
+        Obtains the chain of the simulated MCMC 
+
+        Returns:
+            array: The chain of the simulated MCMC
+        """
         return self.chain
     
-    def getChainParameter(self,param_num):
-        param_chain = []
-        for i in self.getChain():
-            param_chain.append(i[param_num - 1])
-        return param_chain
-    
     def run_mcmc(self, step_size,iterations,pos_range):
+        """
+        Performs the MCMC given the step size, number of iterations, and range of inital positions
+
+        Parameters:
+            step_size (float): Factor by which to scale the size of steps taken by walkers when choosing new positions to travel to
+            iterations (int): The number of iterations to run the MCMC simulation for
+            pos_range (list): 2-item list containing the lower and upper bound of possible positions to initalize walkers between
+
+        Returns:
+            None
+
+        Outputs:
+            MCMC object's chain attribute is updated to include all of the positions that all the walkers traveled to
+        """
         a0 = 5.29e-11 
         post_func = self.getPosterior()
         propos_func = self.getProposal()
@@ -66,6 +106,18 @@ class MCMC:
         
 
     def discard(self,percent):
+        """
+        Dicards a fraction of initial positions for all walkers
+
+        Parameters:
+            percent (float): Decimal that can start at 0 but cannot be equal to or greater than 1
+
+        Returns:
+            None
+
+        Outputs:
+            MCMC object's chain attribute is updated to only include positions of walkers after the fraction of discarded positions
+        """
         burn_in_length = int(len(self.getChain()[0]) * percent)
 
         self.chain = [walker[burn_in_length: ] for walker in self.getChain()]
