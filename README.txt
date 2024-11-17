@@ -8,8 +8,8 @@ The main focus of this package is to perform a Monte Carlo Markov Chain simulati
 3s orbital for a ground state hydrogen atom. 
 
 The package can be installed by typing the following in the command line: "pip(3) install RadialDist" which downloads all the corresponding 
-modules necessary for the fission module to run properly. In addition please be sure to have pip version 24.2 installed in your virtual 
-environment prior to installation of fission.
+modules necessary for the RadialDist module to run properly. In addition please be sure to have pip version 24.2 installed in your virtual 
+environment prior to installation of RadialDist.
 
 Following installation, the following scripts can be ran from command line:
 
